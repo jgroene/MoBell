@@ -12,7 +12,7 @@ import java.net.Socket;
  */
 public class AudioServerAsyncTask extends AsyncTask<InputStream, Void, String> {
 
-    AudioServerAsyncTask(String[] peers) {
+    AudioServerAsyncTask(boolean host) {
 
     }
 
