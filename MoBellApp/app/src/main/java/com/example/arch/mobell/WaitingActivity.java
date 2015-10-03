@@ -1,5 +1,6 @@
 package com.example.arch.mobell;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -9,6 +10,8 @@ import android.view.View;
 
 public class WaitingActivity extends AppCompatActivity {
 
+    privat boolean foundOthers = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -16,7 +19,15 @@ public class WaitingActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        startService(new Intent(getApplicationContext(), P2PService.class));
 
+    }
+
+    @Override
+    protected  void onDestroy() {
+        if (!foundOthers) {
+
+        }
     }
 
 }
