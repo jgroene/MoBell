@@ -14,7 +14,7 @@ import java.net.Socket;
  */
 public class ConnectionHandlerOut implements Runnable {
 
-    public static final int SAMPLING_RATE = 44100;
+    public static final int SAMPLING_RATE = 8000;
     public static final int AUDIO_SOURCE = MediaRecorder.AudioSource.MIC;
     public static final int CHANNEL_IN_CONFIG = AudioFormat.CHANNEL_IN_MONO;
     public static final int AUDIO_FORMAT = AudioFormat.ENCODING_PCM_16BIT;

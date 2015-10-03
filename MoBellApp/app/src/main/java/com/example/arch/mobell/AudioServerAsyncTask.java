@@ -3,7 +3,6 @@ package com.example.arch.mobell;
 import android.os.AsyncTask;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -21,8 +20,10 @@ public class AudioServerAsyncTask extends AsyncTask<InputStream, Void, String> {
         try {
             ServerSocket serverSocket = new ServerSocket(8888);
             Socket clientSocket = serverSocket.accept();
-            Runnable connectionHandler = new ConnectionHandler(clientSocket);
-            new Thread(connectionHandler).start();
+            Runnable connectionHandlerin = new ConnectionHandlerOut(clientSocket);
+            Runnable connectionHandlerout = new ConnectionHandlerOut(clientSocket);
+            new Thread(connectionHandlerout).start();
+            new Thread(connectionHandlerin).start();
         } catch (Exception ex) {
 
         }
