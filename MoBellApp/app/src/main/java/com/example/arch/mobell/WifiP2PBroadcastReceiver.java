@@ -1,4 +1,4 @@
-package com.example.hackzurich.wifidirecttestapp;
+package com.example.arch.mobell;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

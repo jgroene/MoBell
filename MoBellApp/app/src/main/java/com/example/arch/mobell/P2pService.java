@@ -1,4 +1,4 @@
-package com.example.hackzurich.wifidirecttestapp;
+package com.example.arch.mobell;
 
 /**
  * Created by jannik on 10/3/15.
@@ -16,8 +16,6 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.IBinder;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
