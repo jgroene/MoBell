@@ -23,6 +23,9 @@ public class WaitingActivity extends AppCompatActivity {
 //TODO add image capabilities
     private boolean foundOthers = false;
     List peers;
+    Intent tempint1;
+    Intent tempint2;
+    BroadcastReceiver recv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,8 +35,10 @@ public class WaitingActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         peers = new ArrayList();
+        tempint1 = (new Intent(getApplicationContext(), P2pService.class).putExtra("message", P2pService.Intents.startSession));
+        tempint2 = new Intent(getApplicationContext(), SessionActivity.class);
 
-        BroadcastReceiver recv = new BroadcastReceiver() {
+        recv = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 synchronized (this) {
@@ -44,6 +49,14 @@ public class WaitingActivity extends AppCompatActivity {
                     }
                     if (command == P2pService.Broadcasts.onStartSession) {
                         Intent intnt = new Intent(WaitingActivity.this, SessionActivity.class);
+                        String[] macs = new String[peers.size()];
+                        String[] names = new String[peers.size()];
+                        for(int i=0;i<peers.size();i++){
+                            macs[i] = ((Peer)peers.get(i)).mac;
+                            names[i] = ((Peer)peers.get(i)).name;
+                        }
+                        intnt.putExtra("macs", macs);
+                        intnt.putExtra("names", names);
                         startActivity(intnt);
                         finish();
                     }
@@ -56,13 +69,14 @@ public class WaitingActivity extends AppCompatActivity {
         registerReceiver(recv, new IntentFilter("p2pservice"));
 
         Log.e("Start", "thefing service");
-        startService(new Intent(this, P2pService.class));
+        startService(new Intent(this, P2pService.class).putExtra("name", getIntent().getStringExtra("name")));
 
     }
 
     @Override
     protected  void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(recv);
         if (!foundOthers) {
             startService(new Intent(getApplicationContext(), P2pService.class).putExtra("message", P2pService.Intents.abort));
         }
@@ -90,9 +104,16 @@ public class WaitingActivity extends AppCompatActivity {
         butt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startService(new Intent(getApplicationContext(), P2pService.class).putExtra("message", P2pService.Intents.startSession));
-                Intent intent = new Intent(WaitingActivity.this, SessionActivity.class);
-                startActivity(intent);
+                startService(tempint1);
+                String[] macs = new String[peers.size()];
+                String[] names = new String[peers.size()];
+                for(int i=0;i<peers.size();i++){
+                    macs[i] = ((Peer)peers.get(i)).mac;
+                    names[i] = ((Peer)peers.get(i)).name;
+                }
+                tempint2.putExtra("macs", macs);
+                tempint2.putExtra("names", names);
+                startActivity(tempint2);
                 finish();
             }
         });

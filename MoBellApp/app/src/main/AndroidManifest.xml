@@ -33,6 +33,11 @@
             android:label="@string/title_activity_waiting"
             android:theme="@style/AppTheme.NoActionBar" >
         </activity>
+        <activity
+            android:name=".SessionActivity"
+            android:label="@string/title_activity_session"
+            android:theme="@style/AppTheme.NoActionBar" >
+        </activity>
     </application>
 
 </manifest>

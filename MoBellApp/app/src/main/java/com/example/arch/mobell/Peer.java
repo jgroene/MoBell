@@ -6,4 +6,5 @@ package com.example.arch.mobell;
 public class Peer {
     public String name;
     public String mac;
+    public boolean lost = false;
 }
