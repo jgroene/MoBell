@@ -173,7 +173,6 @@ public class P2pService extends Service {
         failure.putExtra("message", Broadcasts.onAbort);
         failure.putExtra("reason", reason);
         sendBroadcast(failure);
-        unregisterReceiver(receiver);
         stopSelf();
     }
 
