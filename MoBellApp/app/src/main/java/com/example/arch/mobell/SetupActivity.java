@@ -69,6 +69,7 @@ public class SetupActivity extends AppCompatActivity {
     private void goToNextActivity() {
         // TODO: check for language packages
         Intent intent = new Intent(this, WaitingActivity.class);
+        intent.putExtra("name", nameField.getText().toString());
         startActivity(intent);
         finish();
     }
