@@ -3,6 +3,8 @@ package com.example.arch.mobell;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.design.widget.FloatingActionButton;
@@ -10,21 +12,30 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+
+import javax.xml.datatype.Duration;
 
 public class SessionActivity extends AppCompatActivity {
 
     List peers;
     BroadcastReceiver recv;
     TextToSpeech tts;
+    Intent abortintent;
+    float historicX = Float.NaN, historicY = Float.NaN;
+    static final int DELTA = 50;
+    enum Direction {LEFT, RIGHT;}
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +48,10 @@ public class SessionActivity extends AppCompatActivity {
         String[] names = getIntent().getExtras().getStringArray("names");
         String[] macs = getIntent().getExtras().getStringArray("macs");
         peers = new ArrayList();
+        abortintent = new Intent(getApplicationContext(), P2pService.class).putExtra("message", P2pService.Intents.abort);
 
+        Peer me = new Peer();me.name="You";me.mac="";
+        peers.add(me);
         for(int i=0;i<names.length;i++) {
             Peer p = new Peer(); p.name=names[i];p.mac=macs[i];p.lost=false;
             peers.add(p);
@@ -71,7 +85,7 @@ public class SessionActivity extends AppCompatActivity {
         butt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startService(new Intent(getApplicationContext(), P2pService.class).putExtra("message", P2pService.Intents.abort));
+                stopService(abortintent);
             }
         });
 
@@ -92,12 +106,42 @@ public class SessionActivity extends AppCompatActivity {
         for(int i = 0; i < peers.size(); i++){
             TableRow tr =  new TableRow(this);
             TextView c1 = new TextView(this);
-            c1.setText(((Peer)peers.get(i)).name);
-            TextView c2 = new TextView(this);
-            c2.setText(((Peer) peers.get(i)).mac);
+            c1.setTextSize(TypedValue.COMPLEX_UNIT_PT, 10);
+            c1.setTypeface(null, Typeface.BOLD);
+            c1.setText(((Peer) peers.get(i)).name);
+
+            c1.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    // TODO Auto-generated method stub
+                    switch (event.getAction()) {
+                        case MotionEvent.ACTION_DOWN:
+                            historicX = event.getX();
+                            historicY = event.getY();
+                            break;
+
+                        case MotionEvent.ACTION_UP:
+                            if (event.getX() - historicX < -DELTA) {
+                                Toast.makeText(getApplicationContext(), "slided to left", Toast.LENGTH_SHORT);
+                                return true;
+                            } else if (event.getX() - historicX > DELTA) {
+                                Toast.makeText(getApplicationContext(), "slided to right", Toast.LENGTH_SHORT);
+                                return true;
+                            }
+                            break;
+                        default:
+                            return false;
+                    }
+                    return false;
+                }
+            });
+
             tr.addView(c1);
-            tr.addView(c2);
             table.addView(tr);
+            View line = new View(this);
+            line.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
+            line.setBackgroundColor(Color.BLACK);
+            tr.addView(line);
         }
     }
 

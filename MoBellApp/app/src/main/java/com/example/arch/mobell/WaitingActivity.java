@@ -20,6 +20,7 @@ import android.widget.Button;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,7 +76,11 @@ public class WaitingActivity extends AppCompatActivity {
                     P2pService.Broadcasts command = (P2pService.Broadcasts) intent.getSerializableExtra("message");
                     if (command == P2pService.Broadcasts.onDeviceFound) {
                         Peer p = new Peer();p.name = intent.getStringExtra("name");p.mac = intent.getStringExtra("mac");
-                        peers.add(p);
+                        boolean toadd = true;
+                        for(int i=0;i<peers.size();i++) {
+                            if(((Peer)peers.get(i)).equals(p.mac)){toadd=false;}
+                        }
+                        if(toadd){peers.add(p);}
                     }
                     if (command == P2pService.Broadcasts.onStartSession) {
                         Intent intnt = new Intent(WaitingActivity.this, SessionActivity.class);
@@ -87,10 +92,14 @@ public class WaitingActivity extends AppCompatActivity {
                         }
                         intnt.putExtra("macs", macs);
                         intnt.putExtra("names", names);
+                        intnt.putExtra("image", getIntent().getParcelableExtra("image"));
                         startActivity(intnt);
                         finish();
                     }
-                    // TODO: ondevicelost, onabourt
+                    else if (command == P2pService.Broadcasts.onAbort) {
+                        Toast.makeText(getApplicationContext(), intent.getStringExtra("reason"),
+                                Toast.LENGTH_LONG).show();
+                    }
                     redraw();
                 }
 
@@ -122,14 +131,14 @@ public class WaitingActivity extends AppCompatActivity {
             TableRow tr =  new TableRow(this);
             TextView c1 = new TextView(this);
             c1.setTextColor(Color.WHITE);
-            c1.setTextSize(TypedValue.COMPLEX_UNIT_PT, 20);
+            c1.setTextSize(TypedValue.COMPLEX_UNIT_PT, 10);
             c1.setTypeface(null, Typeface.BOLD);
             c1.setText(((Peer)peers.get(i)).name);
             if(dark) {c1.setBackgroundColor(Color.rgb(0x02, 0x77, 0xbd));}
             else {c1.setBackgroundColor(Color.rgb(0x4f, 0xc3, 0xf7));}
             TextView c2 = new TextView(this);
             c2.setTextColor(Color.WHITE);
-            c2.setTextSize(TypedValue.COMPLEX_UNIT_PT, 20);
+            c2.setTextSize(TypedValue.COMPLEX_UNIT_PT, 10);
             c2.setText(((Peer) peers.get(i)).mac);
             if(dark) {c2.setBackgroundColor(Color.rgb(0x02, 0x77, 0xbd));}
             else {c2.setBackgroundColor(Color.rgb(0x4f, 0xc3, 0xf7));}
@@ -152,6 +161,7 @@ public class WaitingActivity extends AppCompatActivity {
                 tempint1.putExtra("names", names.clone());
                 tempint2.putExtra("macs", macs.clone());
                 tempint2.putExtra("names", names.clone());
+                tempint2.putExtra("image", getIntent().getParcelableExtra("image"));
                 startService(tempint1);
                 startActivity(tempint2);
                 finish();

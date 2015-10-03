@@ -2,6 +2,7 @@ package com.example.arch.mobell;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
@@ -17,7 +18,7 @@ public class SetupActivity extends AppCompatActivity {
 
     ImageButton cameraButton;
     EditText nameField;
-    Bitmap profilePicture = null;
+    Bitmap profilePicture = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.contact).createScaledBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.contact), 200, 200, true);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +73,7 @@ public class SetupActivity extends AppCompatActivity {
         // TODO: check for language packages
         Intent intent = new Intent(this, WaitingActivity.class);
         intent.putExtra("name", nameField.getText().toString());
+        intent.putExtra("image", profilePicture);
         startActivity(intent);
         finish();
     }
