@@ -3,6 +3,8 @@ package com.example.arch.mobell;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -36,6 +38,7 @@ public class SessionActivity extends AppCompatActivity {
     float historicX = Float.NaN, historicY = Float.NaN;
     static final int DELTA = 50;
     enum Direction {LEFT, RIGHT;}
+    List images;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,13 +51,16 @@ public class SessionActivity extends AppCompatActivity {
         String[] names = getIntent().getExtras().getStringArray("names");
         String[] macs = getIntent().getExtras().getStringArray("macs");
         peers = new ArrayList();
+        images = new ArrayList();
         abortintent = new Intent(getApplicationContext(), P2pService.class).putExtra("message", P2pService.Intents.abort);
 
         Peer me = new Peer();me.name="You";me.mac="";
+        images.add((Bitmap) getIntent().getParcelableExtra("image"));
         peers.add(me);
         for(int i=0;i<names.length;i++) {
             Peer p = new Peer(); p.name=names[i];p.mac=macs[i];p.lost=false;
             peers.add(p);
+            images.add(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.contact).createScaledBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.contact), 200, 200, true));
         }
 
         peers = new ArrayList();
@@ -74,6 +80,10 @@ public class SessionActivity extends AppCompatActivity {
                     if (command == P2pService.Broadcasts.onDeviceLost) {
                         tts.speak(intent.getStringExtra("name")+" is out of range.", TextToSpeech.QUEUE_FLUSH, null);
                     }
+                    /*if (command == P2pService.Broadcasts.) {
+
+                    }*/
+                    // TODO: on image received broadcast!
                 }
 
             }
