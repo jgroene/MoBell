@@ -7,6 +7,7 @@ import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.util.Log;
 
 import java.net.InetAddress;
 
@@ -17,6 +18,7 @@ public class WifiP2PBroadcastReceiver extends BroadcastReceiver {
     P2pService mService;
     WifiP2pManager mManager;
     WifiP2pManager.Channel mChannel;
+    boolean firstConnection=true;
 
     WifiP2pManager.ConnectionInfoListener connectionListener = new WifiP2pManager.ConnectionInfoListener() {
         @Override
@@ -24,11 +26,11 @@ public class WifiP2PBroadcastReceiver extends BroadcastReceiver {
             InetAddress groupOwnerAddress;
             try {
                 groupOwnerAddress = InetAddress.getByName(info.groupOwnerAddress.getHostAddress());
-                if (info.groupFormed && info.isGroupOwner) {
-                    NetworkHelper.broadcastIp(groupOwnerAddress, true);
-                } else if (info.groupFormed) {
-                    NetworkHelper.broadcastIp(groupOwnerAddress, false);
+                if (info.groupFormed && info.isGroupOwner && firstConnection) {
+                } else if (info.groupFormed && firstConnection) {
+                    NetworkHelper.broadcastIp(groupOwnerAddress);
                 }
+                firstConnection = false;
             } catch (Exception ex) {
                 //TODO
             }
@@ -56,6 +58,7 @@ public class WifiP2PBroadcastReceiver extends BroadcastReceiver {
             if (mManager != null) {
                 mManager.requestPeers(mChannel, mService.getPeerListListener());
             }
+
         }else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
             if (mManager == null) {
                 return;
@@ -64,6 +67,7 @@ public class WifiP2PBroadcastReceiver extends BroadcastReceiver {
             NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
             if (networkInfo.isConnected()) {
+
                 mManager.requestConnectionInfo(mChannel, connectionListener);
                 mService.sendStartSession();
             } else {

@@ -57,7 +57,6 @@ public class P2pService extends Service {
         }
     };
     final HashMap<String, String> buddies = new HashMap<String, String>();
-    int NetworkSize;
 
     public WifiP2pManager.PeerListListener getPeerListListener() {
         return peerListListener;
@@ -97,7 +96,7 @@ public class P2pService extends Service {
         if (command == Intents.abort) {
             stopSelf();
         } else if (command == Intents.startSession) {
-            //NetworkHelper.size = intent.getStringArrayExtra("macs").length;
+            NetworkHelper.size = intent.getStringArrayExtra("macs").length;
             createConnection(intent.getStringArrayExtra("macs"));
         } else if (command == Intents.requestDetails) {
             //TODO
@@ -283,7 +282,19 @@ public class P2pService extends Service {
                     fail("Connection could not be created. Error Code: " + Integer.toString(reason));
                 }
             });
+            NetworkHelper.broadcastIp();
         }
+        /*mManager.stopPeerDiscovery(mChannel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailure(int reason) {
+
+            }
+        });*/
     }
 }
 

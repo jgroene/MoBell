@@ -1,5 +1,6 @@
 package com.example.arch.mobell;
 
+import android.os.Handler;
 import android.util.Log;
 
 import java.io.ObjectInputStream;
@@ -29,40 +30,47 @@ public class NetworkHelper {
     static int distributed = 0;
     static void increaseDistributed() {distributed++;}
     static void setSize(int s) { size = s; };
-    public static void broadcastIp(InetAddress hostAddress, boolean host) {
-        if (host) {
-            try {
-                ServerSocket serverSocket = new ServerSocket(8877);
-                while (addresses.size() != size) {
-                    Socket client = serverSocket.accept();
-                    Runnable handler = new NetworkHelperHandler(client);
-                }
-                while (distributed != size) {}
-                serverSocket.close();
-            } catch (Exception ex) {
-                //TODO
+    public static void broadcastIp() {
+        Log.e("NETWORKHANDLER", "Started socket");
+        try {
+            ServerSocket serverSocket = new ServerSocket(8876);
+            Log.e("NETWORKH", "" + size);
+            for(int i = 0; i < size; i++) {
+                Socket client = serverSocket.accept();
+                Runnable run  = new NetworkHelperHandler(client);
+                Handler handler = new Handler();
+                handler.post(run);
             }
-        } else {
-            try {
-                Socket socket = new Socket();
-                socket.setReuseAddress(true);
-                socket.connect(new InetSocketAddress(hostAddress, 8877));
-                OutputStream os = socket.getOutputStream();
-                ObjectOutputStream oos = new ObjectOutputStream(os);
-                oos.writeChars("MoBellHandshake");
-                socket.setKeepAlive(true);
-                ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-                Object object = ois.readObject();
-                if(object.getClass() == List.class) {
-                    addresses = (List<InetAddress>) object;
-                    Log.e("NETWORKHANDLER", "received clients");
-                }
-                ois.close();
-                oos.close();
-                socket.close();
-            } catch (Exception ex) {
-                //TODO
+            while (distributed != size) {}
+            serverSocket.close();
+        } catch (Exception ex) {
+            Log.e("NETWORKHANDLER", "error", ex);
+            //ex.printStackTrace();
+
+        }
+    }
+    public static void broadcastIp(InetAddress hostAddress) {
+
+        Log.e("NETWORKHANDLER", "Started socket client");
+        try {
+            Socket socket = new Socket();
+            socket.setReuseAddress(true);
+            socket.connect(new InetSocketAddress(hostAddress, 8876));
+            while (!socket.isConnected());
+            OutputStream os = socket.getOutputStream();
+            ObjectOutputStream oos = new ObjectOutputStream(os);
+            oos.writeObject("MoBellHandshake");
+            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
+            Object object = ois.readObject();
+            if(object.getClass() == List.class) {
+                addresses = (List<InetAddress>) object;
+                Log.e("NETWORKHANDLER", "received ips");
             }
+            ois.close();
+            oos.close();
+            socket.close();
+        } catch (Exception ex) {
+            //TODO
         }
     }
 }

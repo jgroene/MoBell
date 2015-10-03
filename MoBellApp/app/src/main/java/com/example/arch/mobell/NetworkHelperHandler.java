@@ -17,15 +17,20 @@ public class NetworkHelperHandler implements Runnable {
     }
     public final void run() {
         try {
+            Log.e("NETWORKH", "lkdshfjashldkfj");
             ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
             Object object = ois.readObject();
-            if (object.getClass() == String.class && (String) object == "MoBellHandshake") {
+            if (object.getClass() == String.class && ((String) object).equals("MoBellHandshake")) {
                 NetworkHelper.addAddress(client.getInetAddress());
+                Log.e("NETWORKHELPER", "Added address");
             }
-            while (NetworkHelper.getAddresses().size() != NetworkHelper.size) {}
+            while (NetworkHelper.getAddresses().size() != NetworkHelper.size) {
+                Log.e("NETWORKH", "" + NetworkHelper.getAddresses().size());
+            }
             ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
             oos.writeObject(NetworkHelper.getAddresses());
             Log.e("NETWORKHANDLER", "distributed addresses");
+            NetworkHelper.increaseDistributed();
             oos.close();
             ois.close();
             client.close();
