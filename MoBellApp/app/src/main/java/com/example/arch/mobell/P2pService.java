@@ -18,6 +18,7 @@ import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.IBinder;
 import android.util.Log;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -96,7 +97,6 @@ public class P2pService extends Service {
         if (command == Intents.abort) {
             stopSelf();
         } else if (command == Intents.startSession) {
-            NetworkHelper.size = intent.getStringArrayExtra("macs").length;
             createConnection(intent.getStringArrayExtra("macs"));
         } else if (command == Intents.requestDetails) {
             //TODO
@@ -282,9 +282,9 @@ public class P2pService extends Service {
                     fail("Connection could not be created. Error Code: " + Integer.toString(reason));
                 }
             });
-            NetworkHelper.broadcastIp();
+
         }
-        /*mManager.stopPeerDiscovery(mChannel, new WifiP2pManager.ActionListener() {
+        mManager.stopPeerDiscovery(mChannel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
 
@@ -294,7 +294,13 @@ public class P2pService extends Service {
             public void onFailure(int reason) {
 
             }
-        });*/
+        });
+        Log.e("asdf", "starting");
+        final NetworkDiscoveryHelper helper = new NetworkDiscoveryHelper(this);
+        helper.start();
+    }
+    public void initAudio(List ipAdresses) {
+        Log.e("asdf", "Still alive.");
     }
 }
 
