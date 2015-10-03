@@ -13,7 +13,11 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
     </content>
+<<<<<<< 1a7db1e8e471d48c98751e27bc1e89e7705470c1
     <orderEntry type="jdk" jdkName="1.8" jdkType="JavaSDK" />
+=======
+    <orderEntry type="inheritedJdk" />
+>>>>>>> updated p2pservice
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>
