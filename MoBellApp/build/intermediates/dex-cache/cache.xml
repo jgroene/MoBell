@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="/home/arch/AndroidStudioProjects/Mobell/app/build/intermediates/exploded-aar/com.android.support/design/23.0.1/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="e5c61a3169221a89654ffcaaed47bba51cf071ad">
+        <dex dex="/home/arch/AndroidStudioProjects/Mobell/app/build/intermediates/pre-dexed/debug/classes-e9e78e26025e067f5b07065cf1c28be1c0e7d6b5.jar" />
+    </item>
+    <item
+        jar="/home/arch/AndroidStudioProjects/Mobell/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/23.0.1/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="d86429b0f0b3f3cafbeb78dda1b9d89119ccb05d">
+        <dex dex="/home/arch/AndroidStudioProjects/Mobell/app/build/intermediates/pre-dexed/debug/classes-21efde539410cf944538b0f7b778a764f09aaa0f.jar" />
+    </item>
+    <item
+        jar="/home/arch/AndroidStudioProjects/Mobell/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.0.1/jars/libs/internal_impl-23.0.1.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="aa92916125166649d8ad4ba3940c3dd7515596d3">
+        <dex dex="/home/arch/AndroidStudioProjects/Mobell/app/build/intermediates/pre-dexed/debug/internal_impl-23.0.1-f9ba119bd3ac8d988878fa07c9599f4609892cae.jar" />
+    </item>
+    <item
+        jar="/home/arch/Android/Sdk/extras/android/m2repository/com/android/support/support-annotations/23.0.1/support-annotations-23.0.1.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="1fce89a6428c51467090d7f424e4c9c3dbd55f7e">
+        <dex dex="/home/arch/AndroidStudioProjects/Mobell/app/build/intermediates/pre-dexed/debug/support-annotations-23.0.1-ee7dffc610989bd3aaebbb2c6d440eb9007ba45e.jar" />
+    </item>
+    <item
+        jar="/home/arch/AndroidStudioProjects/Mobell/app/build/intermediates/exploded-aar/com.android.support/support-v4/23.0.1/jars/classes.jar"
+        jumboMode="false"
+        revision="23.0.1"
+        sha1="c31e21b53ff2f74664e498248d01453a32e32d48">
+        <dex dex="/home/arch/AndroidStudioProjects/Mobell/app/build/intermediates/pre-dexed/debug/classes-015b2add0a3276236b4f34b7e29b3ceec06614cb.jar" />
+    </item>
+
+</items>
