@@ -6,6 +6,9 @@
         android:name="android.hardware.camera"
         android:required="true" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+    <uses-permission android:name="ANDROID.PERMISSION.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="ANDROID.PERMISSION.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="ANDROID.PERMISSION.INTERNET" />
 
     <application
         android:allowBackup="true"
