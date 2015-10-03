@@ -25,6 +25,8 @@ public class SetupActivity extends AppCompatActivity {
         setContentView(R.layout.activity_setup);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
 
         nameField = (EditText) findViewById(R.id.nameInput);
 

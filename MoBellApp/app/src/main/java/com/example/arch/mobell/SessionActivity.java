@@ -32,6 +32,7 @@ public class SessionActivity extends AppCompatActivity {
         setContentView(R.layout.activity_session);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         String[] names = getIntent().getExtras().getStringArray("names");
         String[] macs = getIntent().getExtras().getStringArray("macs");
@@ -66,7 +67,7 @@ public class SessionActivity extends AppCompatActivity {
 
         startService(new Intent(getApplicationContext(), P2pService.class).putExtra("message", P2pService.Intents.requestDetails));
 
-        Button butt = (Button)findViewById(R.id.button);
+        FloatingActionButton butt = (FloatingActionButton)findViewById(R.id.fab);
         butt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
