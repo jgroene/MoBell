@@ -57,6 +57,7 @@ public class P2pService extends Service {
         }
     };
     final HashMap<String, String> buddies = new HashMap<String, String>();
+    int NetworkSize;
 
     public WifiP2pManager.PeerListListener getPeerListListener() {
         return peerListListener;
@@ -96,6 +97,7 @@ public class P2pService extends Service {
         if (command == Intents.abort) {
             stopSelf();
         } else if (command == Intents.startSession) {
+            //NetworkHelper.size = intent.getStringArrayExtra("macs").length;
             createConnection(intent.getStringArrayExtra("macs"));
         } else if (command == Intents.requestDetails) {
             //TODO
@@ -132,7 +134,7 @@ public class P2pService extends Service {
     -----------------------------Broadcasts-----------------------------
      */
 
-    public void sendDeviceFound(String address, String name) {
+    public void sendDeviceFound(String name, String address) {
         Intent i = new Intent("p2pservice");
         i.putExtra("message", Broadcasts.onDeviceFound);
         i.putExtra("name", name);

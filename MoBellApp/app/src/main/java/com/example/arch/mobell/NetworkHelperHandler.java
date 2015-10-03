@@ -1,5 +1,7 @@
 package com.example.arch.mobell;
 
+import android.util.Log;
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
@@ -23,6 +25,7 @@ public class NetworkHelperHandler implements Runnable {
             while (NetworkHelper.getAddresses().size() != NetworkHelper.size) {}
             ObjectOutputStream oos = new ObjectOutputStream(client.getOutputStream());
             oos.writeObject(NetworkHelper.getAddresses());
+            Log.e("NETWORKHANDLER", "distributed addresses");
             oos.close();
             ois.close();
             client.close();
