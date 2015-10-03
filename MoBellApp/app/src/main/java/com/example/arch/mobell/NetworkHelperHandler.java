@@ -21,8 +21,8 @@ public class NetworkHelperHandler extends Thread {
     public final void run() {
         try {
             Log.e("NETWORKH", "WTFFFFFF");
-            BufferedReader ois = new BufferedReader(new InputStreamReader(client.getInputStream()));
-            String handshake = ois.readLine();
+            ObjectInputStream ois = new ObjectInputStream(client.getInputStream());
+            String handshake = (String) ois.readObject();
             //if (((String) object).equals("MoBellHandshake")) {
                 NetworkHelper.addAddress(client.getInetAddress());
                 Log.e("NETWORKHELPER", "Added address");

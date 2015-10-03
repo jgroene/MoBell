@@ -85,9 +85,9 @@ public class NetworkHelper {
                     socket.setReuseAddress(true);
                     socket.connect(new InetSocketAddress(hostAddress, 8876));
                     OutputStream os = socket.getOutputStream();
-                    BufferedWriter oos = new BufferedWriter((new OutputStreamWriter(os)));
+                    ObjectOutputStream oos = new ObjectOutputStream(os);
                     Log.e("NETWORKH", "sending handshake");
-                    oos.write("MoBellHandshake\n");
+                    oos.writeChars("MoBellHandshake");
                     ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                     Object object = ois.readObject();
                     if(object.getClass() == List.class) {
