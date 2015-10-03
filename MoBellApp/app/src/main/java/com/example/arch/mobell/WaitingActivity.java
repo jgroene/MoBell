@@ -26,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WaitingActivity extends AppCompatActivity {
-//TODO add image capabilities
+
     private boolean foundOthers = false;
     List peers;
     Intent tempint1;
@@ -81,6 +81,7 @@ public class WaitingActivity extends AppCompatActivity {
                             if(((Peer)peers.get(i)).equals(p.mac)){toadd=false;}
                         }
                         if(toadd){peers.add(p);}
+                        redraw();
                     }
                     if (command == P2pService.Broadcasts.onStartSession) {
                         Intent intnt = new Intent(WaitingActivity.this, SessionActivity.class);
@@ -100,7 +101,6 @@ public class WaitingActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), intent.getStringExtra("reason"),
                                 Toast.LENGTH_LONG).show();
                     }
-                    redraw();
                 }
 
             }

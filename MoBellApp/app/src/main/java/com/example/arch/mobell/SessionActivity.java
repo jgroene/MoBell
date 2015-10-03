@@ -1,7 +1,9 @@
 package com.example.arch.mobell;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,6 +20,7 @@ import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
@@ -35,9 +38,6 @@ public class SessionActivity extends AppCompatActivity {
     BroadcastReceiver recv;
     TextToSpeech tts;
     Intent abortintent;
-    float historicX = Float.NaN, historicY = Float.NaN;
-    static final int DELTA = 50;
-    enum Direction {LEFT, RIGHT;}
     List images;
 
     @Override
@@ -78,10 +78,22 @@ public class SessionActivity extends AppCompatActivity {
                 synchronized (this) {
                     P2pService.Broadcasts command = (P2pService.Broadcasts) intent.getSerializableExtra("message");
                     if (command == P2pService.Broadcasts.onDeviceLost) {
+                        // TODO: das muss in den service rein!!!!!
                         tts.speak(intent.getStringExtra("name")+" is out of range.", TextToSpeech.QUEUE_FLUSH, null);
+                        for(int i=0; i<peers.size(); i++) {
+                            if(((Peer)peers.get(i)).mac.equals(intent.getStringExtra("mac"))) {
+                                peers.remove(i);
+                                images.remove(i);
+                            }
+                        }
+                        redraw();
                     }
                     /*if (command == P2pService.Broadcasts.) {
-
+                        for(int i=0; i<peers.size(); i++) {
+                            if(((Peer)peers.get(i)).mac.equals(intent.getStringExtra("mac"))) {
+                               images.set(i, Intent.getParcable("image"));
+                            }
+                         }
                     }*/
                     // TODO: on image received broadcast!
                 }
@@ -95,7 +107,24 @@ public class SessionActivity extends AppCompatActivity {
         butt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                stopService(abortintent);
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                stopService(abortintent);
+                                finish();
+                                break;
+
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                break;
+                        }
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getApplicationContext());
+                builder.setMessage("Are you sure you want to quit the group?").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
             }
         });
 
@@ -119,39 +148,15 @@ public class SessionActivity extends AppCompatActivity {
             c1.setTextSize(TypedValue.COMPLEX_UNIT_PT, 10);
             c1.setTypeface(null, Typeface.BOLD);
             c1.setText(((Peer) peers.get(i)).name);
-
-            c1.setOnTouchListener(new View.OnTouchListener() {
-                @Override
-                public boolean onTouch(View v, MotionEvent event) {
-                    // TODO Auto-generated method stub
-                    switch (event.getAction()) {
-                        case MotionEvent.ACTION_DOWN:
-                            historicX = event.getX();
-                            historicY = event.getY();
-                            break;
-
-                        case MotionEvent.ACTION_UP:
-                            if (event.getX() - historicX < -DELTA) {
-                                Toast.makeText(getApplicationContext(), "slided to left", Toast.LENGTH_SHORT);
-                                return true;
-                            } else if (event.getX() - historicX > DELTA) {
-                                Toast.makeText(getApplicationContext(), "slided to right", Toast.LENGTH_SHORT);
-                                return true;
-                            }
-                            break;
-                        default:
-                            return false;
-                    }
-                    return false;
-                }
-            });
-
             tr.addView(c1);
-            table.addView(tr);
+            ImageView c2 = new ImageView(this);
+            c2.setImageBitmap(((Peer)images.get(i)));
+            tr.addView(c2);
             View line = new View(this);
             line.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));
             line.setBackgroundColor(Color.BLACK);
             tr.addView(line);
+            table.addView(tr);
         }
     }
 

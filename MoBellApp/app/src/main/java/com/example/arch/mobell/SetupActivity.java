@@ -18,7 +18,7 @@ public class SetupActivity extends AppCompatActivity {
 
     ImageButton cameraButton;
     EditText nameField;
-    Bitmap profilePicture = null;//BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.contact).createScaledBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.contact), 200, 200, true);
+    Bitmap profilePicture = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.contact), 200, 200, true);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +30,6 @@ public class SetupActivity extends AppCompatActivity {
 
 
         nameField = (EditText) findViewById(R.id.nameInput);
-
-        // TODO: set default image
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
