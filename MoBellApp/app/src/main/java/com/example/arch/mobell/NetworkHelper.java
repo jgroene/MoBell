@@ -1,5 +1,7 @@
 package com.example.arch.mobell;
 
+import android.util.Log;
+
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
@@ -53,6 +55,7 @@ public class NetworkHelper {
                 Object object = ois.readObject();
                 if(object.getClass() == List.class) {
                     addresses = (List<InetAddress>) object;
+                    Log.e("NETWORKHANDLER", "received clients");
                 }
                 ois.close();
                 oos.close();
