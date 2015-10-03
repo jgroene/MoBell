@@ -81,6 +81,7 @@ public class WaitingActivity extends AppCompatActivity {
                             if(((Peer)peers.get(i)).equals(p.mac)){toadd=false;}
                         }
                         if(toadd){peers.add(p);}
+                        foundOthers = true;
                         redraw();
                     }
                     if (command == P2pService.Broadcasts.onStartSession) {

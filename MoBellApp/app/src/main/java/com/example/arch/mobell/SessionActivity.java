@@ -150,7 +150,7 @@ public class SessionActivity extends AppCompatActivity {
             c1.setText(((Peer) peers.get(i)).name);
             tr.addView(c1);
             ImageView c2 = new ImageView(this);
-            c2.setImageBitmap(((Peer)images.get(i)));
+            c2.setImageBitmap(((Bitmap)images.get(i)));
             tr.addView(c2);
             View line = new View(this);
             line.setLayoutParams(new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT, 1));

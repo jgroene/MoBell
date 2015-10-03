@@ -90,6 +90,9 @@ public class P2pService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        if(intent.hasExtra("message")) {
+            Log.e("asdf", "onStartCommand with " + intent.getSerializableExtra("message").toString());
+        }
         if (intent.hasExtra("name")) {
             name = intent.getStringExtra("name");
         }
@@ -263,7 +266,7 @@ public class P2pService extends Service {
         });
     }
     public void createConnection(String[] peers) {
-
+        Log.e("asdf", "create connection was called");
         for (String peer : peers) {
 
             final WifiP2pConfig config = new WifiP2pConfig();
@@ -283,7 +286,7 @@ public class P2pService extends Service {
                 }
             });
 
-        }
+        }Log.e("asdf", "all peers connected");
         mManager.stopPeerDiscovery(mChannel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {

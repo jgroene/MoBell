@@ -18,7 +18,7 @@ public class SetupActivity extends AppCompatActivity {
 
     ImageButton cameraButton;
     EditText nameField;
-    Bitmap profilePicture = Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.contact), 200, 200, true);
+    Bitmap profilePicture = null;//Bitmap.createScaledBitmap(BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.contact), 200, 200, true);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

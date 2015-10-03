@@ -42,12 +42,13 @@ public class NetworkDiscoveryHelper extends Thread {
     }
     @Override
     public void run() {
+        Log.e("asdf", "ndiscoveryhelper starterd");
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             Log.e("asdf", "foo", e);
         }
-        if (isHost) {
+        if (isHost) {Log.e("sadf","were host");
             ServerSocket serverSocket = null;
             try {
                 serverSocket = new ServerSocket(1234);
@@ -125,21 +126,35 @@ public class NetworkDiscoveryHelper extends Thread {
             } catch (IOException e) {
                 
             }
-        } else {
+        } else { Log.e("asdf", "were client");
+            Socket socket = null;
             try {
-                Socket socket = new Socket();
+                socket = new Socket();
                 socket.setReuseAddress(true);
+                Log.e("asdf", "trying to connect... NOW");
                 socket.connect(new InetSocketAddress(hostIp, 1234), 200);
-                while(!socket.isConnected()) {
+            } catch (Exception ex) {
+                Log.e("NETWORKH", "fuu", ex);
+            }
+            while(!socket.isConnected()) {
+                try {
                     Log.e("asdf", "not yet connected");
                     Thread.sleep(100);
                     socket.connect(new InetSocketAddress(hostIp, 1234), 200);
+                } catch (Exception eeeeeee) {
                 }
+            }
+            try {
                 Log.e("asdf", "connected");
                 BufferedWriter oos = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                Log.e("asdf", "wait...");
+                Thread.sleep(2000);
+                Log.e("asdf", "write!");
                 oos.write("MoBellHandshake;"+hostIp.toString() + "\n");
                 BufferedReader ois = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                Log.e("asdf", "now were gonna read...");
                 String ipString = ois.readLine();
+                Log.e("asdf", "SUCCESSS! we read"+ipString);
                 String ips[] = ipString.split(";");
                 for (String str : ips) {
                     if (!str.equals("")) {
