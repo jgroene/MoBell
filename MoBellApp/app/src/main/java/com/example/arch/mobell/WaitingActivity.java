@@ -37,7 +37,7 @@ public class WaitingActivity extends AppCompatActivity {
             public void onReceive(Context context, Intent intent) {
                 synchronized (this) {
                     P2pService.Broadcasts command = (P2pService.Broadcasts) intent.getSerializableExtra("message");
-                    if (command == P2pService.Broadcasts.onDeviceConneted) {
+                    if (command == P2pService.Broadcasts.onDeviceFound) {
                         Peer p = new Peer();p.name = intent.getStringExtra("name");p.mac = intent.getStringExtra("mac");
                         peers.add(p);
                     }

@@ -16,6 +16,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
 import android.os.IBinder;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -215,6 +216,8 @@ public class P2pService extends Service {
             @Override
             public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice resourceType) {
                 resourceType.deviceName = buddies.containsKey(resourceType.deviceAddress) ? buddies.get(resourceType.deviceAddress) : resourceType.deviceName;
+                sendDeviceFound(resourceType.deviceName, resourceType.deviceAddress);
+                Log.e("asdf", "Device found " + resourceType.deviceAddress);
             }
         };
 
@@ -229,7 +232,7 @@ public class P2pService extends Service {
 
             @Override
             public void onFailure(int code) {
-                fail("Service rewuest could not be created. Error code: " + Integer.toString(code));
+                fail("Service request could not be created. Error code: " + Integer.toString(code));
             }
         });
         mManager.discoverServices(mChannel, new WifiP2pManager.ActionListener() {
