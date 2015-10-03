@@ -9,6 +9,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TableLayout;
@@ -54,12 +55,14 @@ public class WaitingActivity extends AppCompatActivity {
         };
         registerReceiver(recv, new IntentFilter("p2pservice"));
 
-        startService(new Intent(getApplicationContext(), P2pService.class).putExtra("name", getIntent().getStringExtra("name")));
+        Log.e("Start", "thefing service");
+        startService(new Intent(this, P2pService.class));
 
     }
 
     @Override
     protected  void onDestroy() {
+        super.onDestroy();
         if (!foundOthers) {
             startService(new Intent(getApplicationContext(), P2pService.class).putExtra("message", P2pService.Intents.abort));
         }
@@ -68,6 +71,7 @@ public class WaitingActivity extends AppCompatActivity {
     private void redraw() {
         ((TextView)findViewById(R.id.textView3)).setText("");
         TableLayout table = (TableLayout)findViewById(R.id.mytable);
+        table.removeAllViews();
         table.setStretchAllColumns(true);
         table.bringToFront();
         for(int i = 0; i < peers.size(); i++){

@@ -38,6 +38,8 @@ public class P2pService extends Service {
         getDetails
     };
 
+    boolean isInitialized = false;
+
     private final IntentFilter intentFilter = new IntentFilter();
     WifiP2pManager.Channel mChannel;
     WifiP2pManager mManager;
@@ -64,19 +66,7 @@ public class P2pService extends Service {
 
 
     public P2pService() {
-        intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
-        intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
-        intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
-        intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
-        mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
-        mChannel = mManager.initialize(this, getMainLooper(), null);
-
-        startRegistration();
-        receiver = new WifiP2PBroadcastReceiver(mManager, mChannel,this);
-        registerReceiver(receiver, intentFilter);
-        discover();
-        discoverService();
     }
 
     @Override
@@ -93,6 +83,7 @@ public class P2pService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.e("lala", "dada");
         if (intent.hasExtra("name")) {
             name = intent.getStringExtra("name");
         }
@@ -104,7 +95,25 @@ public class P2pService extends Service {
         } else if (command == Intents.requestDetails) {
             //TODO
         }
+        if (!isInitialized) {initialize();}
         return Service.START_NOT_STICKY;
+    }
+
+    public void initialize() {
+        isInitialized = true;
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
+        intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
+
+        mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
+        mChannel = mManager.initialize(this, getMainLooper(), null);
+
+        startRegistration();
+        receiver = new WifiP2PBroadcastReceiver(mManager, mChannel,this);
+        registerReceiver(receiver, intentFilter);
+        discover();
+        discoverService();
     }
 
     // example of sending a broadcast:
@@ -180,7 +189,7 @@ public class P2pService extends Service {
         mManager.addLocalService(mChannel, serviceInfo, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-
+                Log.e("asdf", "Success");
             }
 
             @Override
@@ -195,7 +204,7 @@ public class P2pService extends Service {
 
             @Override
             public void onSuccess() {
-
+                Log.e("asdf", "Success2");
             }
 
             @Override
@@ -227,7 +236,7 @@ public class P2pService extends Service {
         mManager.addServiceRequest(mChannel, serviceRequest, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-
+                Log.e("asdf", "Success3");
             }
 
             @Override
@@ -239,7 +248,7 @@ public class P2pService extends Service {
 
             @Override
             public void onSuccess() {
-
+                Log.e("asdf", "Success4");
             }
 
             @Override
@@ -262,6 +271,7 @@ public class P2pService extends Service {
 
                 @Override
                 public void onSuccess() {
+                    Log.e("asdf", "Success5");
                 }
 
                 @Override
