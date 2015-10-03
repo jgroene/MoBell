@@ -83,7 +83,6 @@ public class P2pService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e("lala", "dada");
         if (intent.hasExtra("name")) {
             name = intent.getStringExtra("name");
         }
@@ -91,7 +90,7 @@ public class P2pService extends Service {
         if (command == Intents.abort) {
             stopSelf();
         } else if (command == Intents.startSession) {
-            createConnection();
+            createConnection(intent.getStringArrayExtra("macs"));
         } else if (command == Intents.requestDetails) {
             //TODO
         }
@@ -174,13 +173,14 @@ public class P2pService extends Service {
         failure.putExtra("message", Broadcasts.onAbort);
         failure.putExtra("reason", reason);
         sendBroadcast(failure);
+        unregisterReceiver(receiver);
         stopSelf();
     }
 
     private void startRegistration() {
         Map record = new HashMap();
         record.put("listenport", String.valueOf(222));
-        record.put("buddyname", "John Doe" + (int) (Math.random() * 1000));
+        record.put("buddyname", name);
         record.put("available", "visible");
 
         WifiP2pDnsSdServiceInfo serviceInfo =
@@ -189,7 +189,7 @@ public class P2pService extends Service {
         mManager.addLocalService(mChannel, serviceInfo, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-                Log.e("asdf", "Success");
+
             }
 
             @Override
@@ -204,7 +204,7 @@ public class P2pService extends Service {
 
             @Override
             public void onSuccess() {
-                Log.e("asdf", "Success2");
+
             }
 
             @Override
@@ -226,7 +226,6 @@ public class P2pService extends Service {
             public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice resourceType) {
                 resourceType.deviceName = buddies.containsKey(resourceType.deviceAddress) ? buddies.get(resourceType.deviceAddress) : resourceType.deviceName;
                 sendDeviceFound(resourceType.deviceName, resourceType.deviceAddress);
-                Log.e("asdf", "Device found " + resourceType.deviceAddress);
             }
         };
 
@@ -236,7 +235,7 @@ public class P2pService extends Service {
         mManager.addServiceRequest(mChannel, serviceRequest, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-                Log.e("asdf", "Success3");
+
             }
 
             @Override
@@ -248,7 +247,7 @@ public class P2pService extends Service {
 
             @Override
             public void onSuccess() {
-                Log.e("asdf", "Success4");
+
             }
 
             @Override
@@ -257,26 +256,24 @@ public class P2pService extends Service {
             }
         });
     }
-    public void createConnection() {
+    public void createConnection(String[] peers) {
 
-        for (Object peer : peers) {
-            if (!(buddies.containsKey(((WifiP2pDevice)peer).deviceAddress))){continue;}
-            WifiP2pDevice device = (WifiP2pDevice) peer;
+        for (String peer : peers) {
 
             final WifiP2pConfig config = new WifiP2pConfig();
-            config.deviceAddress = device.deviceAddress;
+            config.deviceAddress = peer;
             config.wps.setup = WpsInfo.PBC;
 
             mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
 
                 @Override
                 public void onSuccess() {
-                    Log.e("asdf", "Success5");
+
                 }
 
                 @Override
                 public void onFailure(int reason) {
-
+                    fail("Connection could not be created. Error Code: " + Integer.toString(reason));
                 }
             });
         }

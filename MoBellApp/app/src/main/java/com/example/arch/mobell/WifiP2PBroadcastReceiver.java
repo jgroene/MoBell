@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.NetworkInfo;
+import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 
@@ -64,6 +65,7 @@ public class WifiP2PBroadcastReceiver extends BroadcastReceiver {
 
             if (networkInfo.isConnected()) {
                 mManager.requestConnectionInfo(mChannel, connectionListener);
+                mService.sendStartSession();
             } else {
 
             }
