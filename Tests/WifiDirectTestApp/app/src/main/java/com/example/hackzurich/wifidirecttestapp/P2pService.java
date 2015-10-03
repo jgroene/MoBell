@@ -1,30 +1,41 @@
 package com.example.hackzurich.wifidirecttestapp;
 
+/**
+ * Created by jannik on 10/3/15.
+ */
+
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.wifi.WpsInfo;
-import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceRequest;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
+import android.os.IBinder;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+
+public class P2pService extends Service {
+
+    public static enum Broadcasts {
+        // broadcast before the session starts
+        onStatusChanged,
+        onDeviceConneted,
+        onDeviceDisconnected,
+        onStartSession,
+        onAbort,
+        // broadcasts after the session starts
+        onDeviceOutOfRange,
+        getDetails
+    };
+
     private final IntentFilter intentFilter = new IntentFilter();
     WifiP2pManager.Channel mChannel;
     WifiP2pManager mManager;
@@ -47,12 +58,10 @@ public class MainActivity extends AppCompatActivity {
         return peerListListener;
     }
     WifiP2pDnsSdServiceRequest serviceRequest;
+    String name = "";
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
+    public P2pService() {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
@@ -61,27 +70,41 @@ public class MainActivity extends AppCompatActivity {
         mManager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         mChannel = mManager.initialize(this, getMainLooper(), null);
 
-        final Button button = (Button) findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                        discover();
-            }
-        });
-
-        final Button button2 = (Button) findViewById(R.id.button2);
-        button2.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                discoverService();
-            }
-        });
-        final Button button3 = (Button) findViewById(R.id.button3);
-        button3.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                createConnection();
-            }
-        });
         startRegistration();
+        receiver = new WifiP2PBroadcastReceiver(mManager, mChannel,this);
+        registerReceiver(receiver, intentFilter);
     }
+
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    public static enum Intents {
+        empty,
+        abort,
+        startSession,
+        requestDetails
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        if (intent.hasExtra("name")) {
+            name = intent.getStringExtra("name");
+        }
+        int command = intent.getIntExtra("message", 0);
+        return Service.START_NOT_STICKY;
+    }
+
+    // example of sending a broadcast:
+    //Intent i = new Intent("p2pservice");
+    //i.putExtra("message", Broadcasts.onStatusChanged);
+    //sendBroadcast(i);
+
+
+    /*
+        ---------------Methods for establishing connection------------
+    */
 
     private void startRegistration() {
         Map record = new HashMap();
@@ -106,7 +129,21 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void discover() {
+        mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
 
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailure(int reasonCode) {
+
+            }
+        });
+
+    }
     public void discoverService() {
         WifiP2pManager.DnsSdTxtRecordListener txtListener = new WifiP2pManager.DnsSdTxtRecordListener() {
             @Override
@@ -118,7 +155,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDnsSdServiceAvailable(String instanceName, String registrationType, WifiP2pDevice resourceType) {
                 resourceType.deviceName = buddies.containsKey(resourceType.deviceAddress) ? buddies.get(resourceType.deviceAddress) : resourceType.deviceName;
-                ((TextView) findViewById(R.id.textView)).append("\n" + resourceType.deviceAddress);
             }
         };
 
@@ -150,87 +186,5 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void discover() {
-        mManager.discoverPeers(mChannel, new WifiP2pManager.ActionListener() {
-
-            @Override
-            public void onSuccess() {
-                ((TextView) findViewById(R.id.textView)).setText("Success");
-            }
-
-            @Override
-            public void onFailure(int reasonCode) {
-                ((TextView) findViewById(R.id.textView)).setText("Failure.\n Error Coode: " + Integer.toString(reasonCode));
-            }
-        });
-
-    }
-
-    public void createConnection() {
-
-            for (Object peer : peers) {
-                if (!(buddies.containsKey(((WifiP2pDevice)peer).deviceAddress))){continue;}
-                WifiP2pDevice device = (WifiP2pDevice) peer;
-
-                final WifiP2pConfig config = new WifiP2pConfig();
-                config.deviceAddress = device.deviceAddress;
-                config.wps.setup = WpsInfo.PBC;
-
-                mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
-
-                    @Override
-                    public void onSuccess() {
-                        ((TextView) findViewById(R.id.textView)).append("\nConnected to " + config.deviceAddress);
-                    }
-
-                    @Override
-                    public void onFailure(int reason) {
-                        Toast.makeText(MainActivity.this, "Connect failed. Retry.",
-                                Toast.LENGTH_SHORT).show();
-                    }
-                });
-            }
-    }
-
-    public void addText(String output) {
-        ((TextView) findViewById(R.id.textView)).append("\n" + output);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void setWifiP2pEnabled(boolean enabled) {
-        isWifiP2pEnabled = enabled;
-    }
-    @Override
-    public void onResume() {
-        super.onResume();
-        receiver = new WifiP2PBroadcastReceiver(mManager, mChannel,this);
-        registerReceiver(receiver,  intentFilter);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        unregisterReceiver(receiver);
-    }
 }
+

@@ -1,17 +1,11 @@
 <component name="libraryTable">
   <library name="design-23.0.1">
-<<<<<<< 1a7db1e8e471d48c98751e27bc1e89e7705470c1
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/design/23.0.1/jars/classes.jar!/" />
-      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/design/23.0.1/res" />
-=======
     <ANNOTATIONS>
       <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/design/23.0.1/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/design/23.0.1/res" />
       <root url="jar://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/design/23.0.1/jars/classes.jar!/" />
->>>>>>> updated p2pservice
+      <root url="file://$PROJECT_DIR$/app/build/intermediates/exploded-aar/com.android.support/design/23.0.1/res" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

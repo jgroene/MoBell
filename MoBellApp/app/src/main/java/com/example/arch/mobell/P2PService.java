@@ -21,10 +21,21 @@ public class P2PService extends Service {
     public P2PService() {
     }
 
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    public static enum Intents {
+        empty,
+        abort,
+        startSession,
+        requestDetails
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        String command = intent.getStringExtra("");
+        int command = intent.getIntExtra("message", 0);
         return Service.START_NOT_STICKY;
     }
 
