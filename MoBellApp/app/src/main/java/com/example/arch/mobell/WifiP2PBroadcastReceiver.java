@@ -28,11 +28,12 @@ public class WifiP2PBroadcastReceiver extends BroadcastReceiver {
                 groupOwnerAddress = InetAddress.getByName(info.groupOwnerAddress.getHostAddress());
                 if (info.groupFormed && info.isGroupOwner && firstConnection) {
                 } else if (info.groupFormed && firstConnection) {
+                    Log.e("NETWORKH", "KJJAHLKFJH");
                     NetworkHelper.broadcastIp(groupOwnerAddress);
                 }
                 firstConnection = false;
             } catch (Exception ex) {
-                //TODO
+                Log.e("NETWORKH", "bar", ex);
             }
         }
     };
