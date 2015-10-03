@@ -4,10 +4,11 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.NetworkInfo;
+import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.util.Log;
 
-import com.example.hackzurich.wifidirecttestapp.MainActivity;
+import java.net.InetAddress;
 
 /**
  * Created by jannik on 10/3/15.
@@ -16,6 +17,23 @@ public class WifiP2PBroadcastReceiver extends BroadcastReceiver {
     MainActivity mActivity;
     WifiP2pManager mManager;
     WifiP2pManager.Channel mChannel;
+
+    WifiP2pManager.ConnectionInfoListener connectionListener = new WifiP2pManager.ConnectionInfoListener() {
+        @Override
+        public void onConnectionInfoAvailable(WifiP2pInfo info) {
+            InetAddress groupOwnerAddress;
+            try {
+                groupOwnerAddress = InetAddress.getByName(info.groupOwnerAddress.getHostAddress());
+                if (info.groupFormed && info.isGroupOwner) {
+                    mActivity.addText("Group Owner");
+                } else if (info.groupFormed) {
+                    mActivity.addText("Client connected to" + groupOwnerAddress.getHostAddress());
+                }
+            } catch (Exception ex) {
+                //TODO
+            }
+        }
+    };
 
     WifiP2PBroadcastReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, MainActivity activity) {
         super();
@@ -35,15 +53,24 @@ public class WifiP2PBroadcastReceiver extends BroadcastReceiver {
             }
 
         }else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
-
-            // Request available peers from the wifi p2p manager. This is an
-            // asynchronous call and the calling activity is notified with a
-            // callback on PeerListListener.onPeersAvailable()
             if (mManager != null) {
                 mManager.requestPeers(mChannel, mActivity.getPeerListListener());
             }
-        }
-        //TODO: Implement other possible actions!
-    }
+        }else if (WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION.equals(action)) {
+            if (mManager == null) {
+                return;
+            }
 
+            NetworkInfo networkInfo = (NetworkInfo) intent.getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+
+            if (networkInfo.isConnected()) {
+                mManager.requestConnectionInfo(mChannel, connectionListener);
+            } else {
+                mActivity.addText("Disconnected.");
+            }
+
+            //TODO: Implement other possible actions!
+        }
+
+    }
 }
