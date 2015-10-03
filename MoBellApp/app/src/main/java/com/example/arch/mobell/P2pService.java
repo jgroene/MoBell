@@ -28,12 +28,12 @@ public class P2pService extends Service {
     public static enum Broadcasts {
         // broadcast before the session starts
         onStatusChanged,
-        onDeviceConneted,
-        onDeviceDisconnected,
+        onDeviceFound,
+        onDeviceLost,
         onStartSession,
         onAbort,
         // broadcasts after the session starts
-        onDeviceOutOfRange,
+        onDeviceDisconnected,
         getDetails
     };
 
@@ -49,7 +49,7 @@ public class P2pService extends Service {
             peers.clear();
             peers.addAll(peerList.getDeviceList());
             for (Object device : peers) {
-                //((TextView) findViewById(R.id.textView)).append("\n" + ((WifiP2pDevice) device).deviceName);
+
             }
         }
     };
@@ -74,6 +74,8 @@ public class P2pService extends Service {
         startRegistration();
         receiver = new WifiP2PBroadcastReceiver(mManager, mChannel,this);
         registerReceiver(receiver, intentFilter);
+        discover();
+        discoverService();
     }
 
     @Override
@@ -93,7 +95,14 @@ public class P2pService extends Service {
         if (intent.hasExtra("name")) {
             name = intent.getStringExtra("name");
         }
-        int command = intent.getIntExtra("message", 0);
+        Intents command = (Intents) intent.getSerializableExtra("message");
+        if (command == Intents.abort) {
+            stopSelf();
+        } else if (command == Intents.startSession) {
+            createConnection();
+        } else if (command == Intents.requestDetails) {
+            //TODO
+        }
         return Service.START_NOT_STICKY;
     }
 
@@ -103,9 +112,60 @@ public class P2pService extends Service {
     //sendBroadcast(i);
 
 
+
+    /*
+    -----------------------------Broadcasts-----------------------------
+     */
+
+    public void sendDeviceFound(String address, String name) {
+        Intent i = new Intent("p2pservice");
+        i.putExtra("message", Broadcasts.onDeviceFound);
+        i.putExtra("name", name);
+        i.putExtra("mac",  address);
+        sendBroadcast(i);
+    }
+    public void sendDeviceLost(String address, String name) {
+        Intent i = new Intent("p2pservice");
+        i.putExtra("message", Broadcasts.onDeviceLost);
+        i.putExtra("name", name);
+        i.putExtra("mac", address);
+        sendBroadcast(i);
+    }
+
+    public void sendStartSession() {
+        Intent i = new Intent("p2pservice");
+        i.putExtra("message", Broadcasts.onStartSession);
+        sendBroadcast(i);
+    }
+
+    public void sendDeviceDisconnected(String name, String address) {
+        Intent i = new Intent("p2pservice");
+        i.putExtra("message", Broadcasts.onDeviceDisconnected);
+        i.putExtra("name", name);
+        i.putExtra("mac", address);
+        sendBroadcast(i);
+    }
+
+    public void sendDetails(String[] names, String[] addresses) {
+        Intent i = new Intent("p2pservice");
+        i.putExtra("message", Broadcasts.getDetails);
+        i.putExtra("names", names);
+        i.putExtra("macs", addresses);
+        sendBroadcast(i);
+    }
+
     /*
         ---------------Methods for establishing connection------------
     */
+
+
+    public void fail(String reason) {
+        Intent failure = new Intent("p2pservice");
+        failure.putExtra("message", Broadcasts.onAbort);
+        failure.putExtra("reason", reason);
+        sendBroadcast(failure);
+        stopSelf();
+    }
 
     private void startRegistration() {
         Map record = new HashMap();
@@ -124,8 +184,7 @@ public class P2pService extends Service {
 
             @Override
             public void onFailure(int arg0) {
-
-
+                fail("Could not register service.");
             }
         });
     }
@@ -140,7 +199,7 @@ public class P2pService extends Service {
 
             @Override
             public void onFailure(int reasonCode) {
-
+                fail("Peer discovery failed with error code: " + Integer.toString(reasonCode));
             }
         });
 
@@ -170,19 +229,19 @@ public class P2pService extends Service {
 
             @Override
             public void onFailure(int code) {
-
+                fail("Service rewuest could not be created. Error code: " + Integer.toString(code));
             }
         });
         mManager.discoverServices(mChannel, new WifiP2pManager.ActionListener() {
 
             @Override
             public void onSuccess() {
-                // Success!
+
             }
 
             @Override
             public void onFailure(int code) {
-
+                fail("Service discovery failed. Error code: " + Integer.toString(code));
             }
         });
     }

@@ -48,7 +48,7 @@ public class WifiP2PBroadcastReceiver extends BroadcastReceiver {
             if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
 
             } else {
-
+                mService.fail("Wifi Direct is disabled.");
             }
 
         }else if (WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION.equals(action)) {
