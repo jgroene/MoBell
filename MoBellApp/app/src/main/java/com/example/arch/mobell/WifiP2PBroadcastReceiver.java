@@ -28,6 +28,17 @@ public class WifiP2PBroadcastReceiver extends BroadcastReceiver {
                 groupOwnerAddress = InetAddress.getByName(info.groupOwnerAddress.getHostAddress());
                 if (info.groupFormed && info.isGroupOwner && firstConnection) {
                 } else if (info.groupFormed && firstConnection && (!info.isGroupOwner)) {
+                    mManager.stopPeerDiscovery(mChannel, new WifiP2pManager.ActionListener() {
+                        @Override
+                        public void onSuccess() {
+
+                        }
+
+                        @Override
+                        public void onFailure(int reason) {
+
+                        }
+                    });
                     NetworkDiscoveryHelper helper = new NetworkDiscoveryHelper(mService, groupOwnerAddress);
                     helper.start();
                 }

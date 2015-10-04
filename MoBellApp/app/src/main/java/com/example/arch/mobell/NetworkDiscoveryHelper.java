@@ -44,11 +44,11 @@ public class NetworkDiscoveryHelper extends Thread {
     public void run() {
         Log.e("asdf", "ndiscoveryhelper starterd");
         if (isHost) {Log.e("asdf","were host");
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                Log.e("asdf", "foo", e);
-            }
+            //try {
+            //    Thread.sleep(2000);
+            //} catch (InterruptedException e) {
+            //    Log.e("asdf", "foo", e);
+            //}
             ServerSocket serverSocket = null;
             try {
                 serverSocket = new ServerSocket(1234);
@@ -108,12 +108,13 @@ public class NetworkDiscoveryHelper extends Thread {
                     Log.e("asdf", "foo", e);
                 }
                 try {
-                    String ipString = "";
+                    String ipString = myIp;
                     for (Object address : ipAddresses) {
                         ipString += ((InetAddress) address).toString() + ";";
                     }
                     ipString += '\n';
                     oos.write(ipString);
+                    Log.e("asdf", ipString);
                     oos.flush();
                 } catch (IOException e) {
                     Log.e("asdf", "foo", e);
