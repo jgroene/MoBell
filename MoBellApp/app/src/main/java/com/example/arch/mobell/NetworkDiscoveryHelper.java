@@ -135,7 +135,7 @@ public class NetworkDiscoveryHelper extends Thread {
             try {
                 socket = new Socket();
                 socket.setReuseAddress(true);
-                Log.e("asdf", "trying to connect... NOW");
+                Log.e("asdf", "trying to connect to " + hostIp);
                 socket.connect(new InetSocketAddress(hostIp, 1234), 200);
             } catch (Exception ex) {
                 Log.e("NETWORKH", "fuu", ex);
@@ -151,11 +151,11 @@ public class NetworkDiscoveryHelper extends Thread {
             try {
                 Log.e("asdf", "connected");
                 BufferedWriter oos = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
+                Log.e("asdf", "write!");
+                oos.write("MoBellHandshake;" + hostIp.toString() + "\n");
+                BufferedReader ois = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 Log.e("asdf", "wait...");
                 Thread.sleep(2000);
-                Log.e("asdf", "write!");
-                oos.write("MoBellHandshake;"+hostIp.toString() + "\n");
-                BufferedReader ois = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 Log.e("asdf", "now were gonna read...");
                 String ipString = ois.readLine();
                 Log.e("asdf", "SUCCESSS! we read"+ipString);
