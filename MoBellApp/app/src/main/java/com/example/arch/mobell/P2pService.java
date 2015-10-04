@@ -100,7 +100,11 @@ public class P2pService extends Service {
         if (command == Intents.abort) {
             stopSelf();
         } else if (command == Intents.startSession) {
-            createConnection(intent.getStringArrayExtra("macs"));
+            try {
+                createConnection(intent.getStringArrayExtra("macs"));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } else if (command == Intents.requestDetails) {
             //TODO
         }
@@ -265,19 +269,20 @@ public class P2pService extends Service {
             }
         });
     }
-    public void createConnection(String[] peers) {
+    public void createConnection(String[] peers) throws InterruptedException {
         Log.e("asdf", "create connection was called");
         for (String peer : peers) {
 
             final WifiP2pConfig config = new WifiP2pConfig();
             config.deviceAddress = peer;
             config.wps.setup = WpsInfo.PBC;
+            final NetworkDiscoveryHelper helper = new NetworkDiscoveryHelper(this);
 
             mManager.connect(mChannel, config, new WifiP2pManager.ActionListener() {
 
                 @Override
                 public void onSuccess() {
-
+                    helper.start();
                 }
 
                 @Override
@@ -286,7 +291,8 @@ public class P2pService extends Service {
                 }
             });
 
-        }Log.e("asdf", "all peers connected");
+        }
+        Log.e("asdf", "all peers connected");
         mManager.stopPeerDiscovery(mChannel, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
@@ -299,8 +305,8 @@ public class P2pService extends Service {
             }
         });
         Log.e("asdf", "starting");
-        final NetworkDiscoveryHelper helper = new NetworkDiscoveryHelper(this);
-        helper.start();
+
+
     }
     public void initAudio(List ipAdresses) {
         Log.e("asdf", "Still alive.");

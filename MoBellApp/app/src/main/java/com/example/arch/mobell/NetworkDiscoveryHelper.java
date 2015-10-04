@@ -43,18 +43,19 @@ public class NetworkDiscoveryHelper extends Thread {
     @Override
     public void run() {
         Log.e("asdf", "ndiscoveryhelper starterd");
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Log.e("asdf", "foo", e);
-        }
         if (isHost) {Log.e("asdf","were host");
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                Log.e("asdf", "foo", e);
+            }
             ServerSocket serverSocket = null;
             try {
                 serverSocket = new ServerSocket(1234);
             } catch (IOException e) {
                 Log.e("asdf", "foo", e);
             }
+            BufferedReader ois = null;
             long now = System.currentTimeMillis();
             List clients = new ArrayList();
             String myIp = "";
@@ -65,7 +66,7 @@ public class NetworkDiscoveryHelper extends Thread {
                 } catch (IOException e) {
                     Log.e("asdf", "foo", e);
                 }
-                BufferedReader ois = null;
+
                 try {
                     ois = new BufferedReader(new InputStreamReader(client.getInputStream()));
                 } catch (IOException e) {
@@ -74,7 +75,10 @@ public class NetworkDiscoveryHelper extends Thread {
                 String handshake_data = null;
                 try {
                     Log.e("asdf", "trying to read");
-                    Thread.sleep(2000);
+                    while(ois.ready() == false) {
+                        Thread.sleep(100);
+                        Log.e("asdf", "still waiting");
+                    }
                     handshake_data = ois.readLine();
                 } catch (OptionalDataException e) {
                     Log.e("asdf", "foo", e);
@@ -89,11 +93,6 @@ public class NetworkDiscoveryHelper extends Thread {
                     myIp = handshake[1];
                     ipAddresses.add(client.getInetAddress());
                     clients.add(client);
-                }
-                try {
-                    ois.close();
-                } catch (IOException e) {
-                    Log.e("asdf", "foo", e);
                 }
             }
             try {
@@ -113,8 +112,9 @@ public class NetworkDiscoveryHelper extends Thread {
                     for (Object address : ipAddresses) {
                         ipString += ((InetAddress) address).toString() + ";";
                     }
-                    ipString += "\n";
+                    ipString += '\n';
                     oos.write(ipString);
+                    oos.flush();
                 } catch (IOException e) {
                     Log.e("asdf", "foo", e);
                 }
@@ -123,7 +123,13 @@ public class NetworkDiscoveryHelper extends Thread {
                 } catch (IOException e) {
                     Log.e("asdf", "foo", e);
                 }
+                try {
+                    ois.close();
+                } catch (IOException e) {
+                    Log.e("asdf", "foo", e);
+                }
             }
+
             try {
                 serverSocket.close();
             } catch (IOException e) {
@@ -152,10 +158,10 @@ public class NetworkDiscoveryHelper extends Thread {
                 Log.e("asdf", "connected");
                 BufferedWriter oos = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
                 Log.e("asdf", "write!");
-                oos.write("MoBellHandshake;" + hostIp.toString() + "\n");
+                oos.write("MoBellHandshake;" + hostIp.toString() + '\n');
+                oos.flush();
                 BufferedReader ois = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                 Log.e("asdf", "wait...");
-                Thread.sleep(2000);
                 Log.e("asdf", "now were gonna read...");
                 String ipString = ois.readLine();
                 Log.e("asdf", "SUCCESSS! we read"+ipString);
