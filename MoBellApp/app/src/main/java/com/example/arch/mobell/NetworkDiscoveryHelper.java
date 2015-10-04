@@ -48,7 +48,7 @@ public class NetworkDiscoveryHelper extends Thread {
         } catch (InterruptedException e) {
             Log.e("asdf", "foo", e);
         }
-        if (isHost) {Log.e("sadf","were host");
+        if (isHost) {Log.e("asdf","were host");
             ServerSocket serverSocket = null;
             try {
                 serverSocket = new ServerSocket(1234);
@@ -74,11 +74,14 @@ public class NetworkDiscoveryHelper extends Thread {
                 String handshake_data = null;
                 try {
                     Log.e("asdf", "trying to read");
+                    Thread.sleep(2000);
                     handshake_data = ois.readLine();
                 } catch (OptionalDataException e) {
                     Log.e("asdf", "foo", e);
                 } catch (IOException e) {
                     Log.e("asdf", "foo", e);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
                 String handshake[] = handshake_data.split(";");
                 Log.e("asdf", handshake_data);
@@ -126,7 +129,8 @@ public class NetworkDiscoveryHelper extends Thread {
             } catch (IOException e) {
                 
             }
-        } else { Log.e("asdf", "were client");
+        } else {
+            Log.e("asdf", "were client");
             Socket socket = null;
             try {
                 socket = new Socket();

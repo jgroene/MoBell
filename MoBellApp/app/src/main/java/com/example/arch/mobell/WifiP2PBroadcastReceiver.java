@@ -27,7 +27,7 @@ public class WifiP2PBroadcastReceiver extends BroadcastReceiver {
             try {
                 groupOwnerAddress = InetAddress.getByName(info.groupOwnerAddress.getHostAddress());
                 if (info.groupFormed && info.isGroupOwner && firstConnection) {
-                } else if (info.groupFormed && firstConnection) {
+                } else if (info.groupFormed && firstConnection && (!info.isGroupOwner)) {
                     NetworkDiscoveryHelper helper = new NetworkDiscoveryHelper(mService, groupOwnerAddress);
                     helper.start();
                 }
